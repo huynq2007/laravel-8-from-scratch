@@ -24,7 +24,7 @@ services:
   composer:
     container_name: 'laravel8-practice-composer'
     image: composer
-    command: 'composer install -o --ignore-platform-reqs'
+    command: bash -c "composer install -o --ignore-platform-reqs && tail -f /dev/null"
     volumes:
       - ./server:/srv:delegated
     working_dir: /srv
