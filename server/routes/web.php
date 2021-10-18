@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,10 +19,13 @@ Route::get('/', function () {
 });
 
 Route::get('/posts/{post}', function ($slug) {
-    $path = __DIR__ . "/../resources/posts/{$slug}.html";
-    if (!file_exists($path)) {
+    if (!file_exists($path = __DIR__ . "/../resources/posts/{$slug}.html")) {
         abort(404);
     }
-    $post = file_get_contents($path);
+
+    $post = Cache::remember("posts.{$slug}", 3600, function () use ($path) {
+        return file_get_contents($path);
+    });
+
     return view('post', compact('post'));
 })->where('post', '[A-z_\-]+');
