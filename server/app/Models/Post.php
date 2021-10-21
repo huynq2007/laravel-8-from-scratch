@@ -4,27 +4,52 @@
 namespace App\Models;
 
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 class Post
 {
+    public $title;
+    public $excerpt;
+    public $slug;
+    public $date;
+    public $body;
+
+    /**
+     * Post constructor.
+     * @param $title
+     * @param $excerpt
+     * @param $slug
+     * @param $date
+     * @param $body
+     */
+    public function __construct($title, $excerpt, $slug, $date, $body)
+    {
+        $this->title = $title;
+        $this->excerpt = $excerpt;
+        $this->slug = $slug;
+        $this->date = $date;
+        $this->body = $body;
+    }
+
     public static function all()
     {
-        $files = File::files(resource_path("posts"));
-        return array_map(function ($file) {
-            return $file->getContents();
-        }, $files);
+        return collect(File::files(resource_path("posts")))
+            ->map(function ($file) {
+                return YamlFrontMatter::parseFile($file);
+            })
+            ->map(function ($document) {
+                return new Post(
+                    $document->title,
+                    $document->excerpt,
+                    $document->slug,
+                    $document->date,
+                    $document->body());
+            });
     }
 
     public static function find($slug)
     {
-        if (!file_exists($path = resource_path("/posts/{$slug}.html"))) {
-            abort(404);
-        }
-
-        return Cache::remember("posts.{$slug}", 3600, function () use ($path) {
-            return file_get_contents($path);
-        });
+        return static::all()->firstOrFail('slug', $slug);
     }
 }
