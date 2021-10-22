@@ -34,22 +34,25 @@ class Post
 
     public static function all()
     {
-        return collect(File::files(resource_path("posts")))
-            ->map(function ($file) {
-                return YamlFrontMatter::parseFile($file);
-            })
-            ->map(function ($document) {
-                return new Post(
-                    $document->title,
-                    $document->excerpt,
-                    $document->slug,
-                    $document->date,
-                    $document->body());
-            });
+        return cache()->rememberForever('posts.all', function () {
+            return collect(File::files(resource_path("posts")))
+                ->map(function ($file) {
+                    return YamlFrontMatter::parseFile($file);
+                })
+                ->map(function ($document) {
+                    return new Post(
+                        $document->title,
+                        $document->excerpt,
+                        $document->slug,
+                        $document->date,
+                        $document->body());
+                })
+                ->sortByDesc('date');
+        });
     }
 
     public static function find($slug)
     {
-        return static::all()->firstOrFail('slug', $slug);
+        return static::all()->firstWhere('slug', $slug);
     }
 }
