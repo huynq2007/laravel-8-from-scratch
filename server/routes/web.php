@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('posts', compact('posts'));
 });
 
-Route::get('/posts/{post}', function ($slug) {
-    $post = Post::find($slug);
+Route::get('/posts/{post}', function ($id) {
+    $post = Post::findOrFail($id);
     return view('post', compact('post'));
-})->where('post', '[A-z_\-]+');
+});
