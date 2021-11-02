@@ -8,6 +8,9 @@
             </a>
         </h1>
         <article>
+            <p>
+                <a href="/cat/{{ $post->category->slug }}">[{{ $post->category->name }}]</a>
+            </p>
             {{ $post->excerpt }}
         </article>
     @endforeach
