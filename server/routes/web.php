@@ -26,9 +26,9 @@ Route::get('/posts/{post:slug}', function (Post $post) {
 });
 
 Route::get('/categories/{category:slug}', function (Category $category) {
-    return view('category', compact('category'));
+    return view('posts', ['posts' => $category->posts]);
 });
 
 Route::get('/author/{author:username}', function (User $author) {
-    return view('author', compact('author'));
+    return view('posts', ['posts' => $author->posts]);
 });
