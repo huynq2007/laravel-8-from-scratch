@@ -9,7 +9,8 @@
         </h1>
         <article>
             <p>
-                <a href="/categories/{{ $post->category->slug }}">[{{ $post->category->name }}]</a>
+                Post by <a href="/author/{{ $post->author->username }}">{{ $post->author->name }}</a> in <a
+                    href="/categories/{{ $post->category->slug }}">{{ $post->category->name }}</a>
             </p>
             {{ $post->excerpt }}
         </article>
